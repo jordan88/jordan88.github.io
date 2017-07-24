@@ -2,15 +2,15 @@
 
 @import "{{ site.theme }}";
 
-.container {
+.myContainer {
   margin: 0 auto;
   text-align: center;
 }
-.container > h1 {
+.myContainer > h1 {
   display: inline;
   margin: 0 auto;
 }
-.container > canvas {
+.myContainer > canvas {
   border: 2px solid black;
   margin: 1em;
 }
