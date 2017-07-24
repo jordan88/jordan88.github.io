@@ -5,9 +5,84 @@
 <title>Welcome</title>
 <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
-<body>
-<div>
+<body onload="loop()">
+<div class="container">
+<canvas id="c1" width="30" height="30"></canvas>
 <h1>Hello and welcome to the site</h1>
+<canvas id="c2" width="30" height="30"></canvas>
 </div>
+<script>
+var pi2 = 2*Math.PI;
+var mag = 100;
+var flag = -.5;
+function go(canvas, rays) {
+  var width = canvas.width;
+  var height = canvas.height;
+  var ctx = canvas.getContext("2d");
+  var arrx = [], arry = [], arrc = [], arrz = [];
+for(var i = 0; i < height; i++) {
+  var tmparrx = [];
+  var tmparry = [];
+  var tmparrc = [];
+  var tmparrz = [];
+  for(var j = 0; j < width; j++) {
+    tmparrx.push(0);
+    tmparry.push(0);
+    tmparrc.push([0,0,0]);
+    tmparrz.push(0);
+  }
+  arrx.push(tmparrx);
+  arry.push(tmparry);
+  arrc.push(tmparrc);
+  arrz.push(tmparrz);
+}
+var exp = []
+for(var i = 0; i < rays; i++) {
+  exp.push([Math.cos(pi2*i/rays), Math.sin(pi2*i/rays)]);
+           }
+var col = [];
+for(var i = 0 ; i < 3; i++) {
+    col.push([Math.cos(pi2*i/3/rays), Math.sin(pi2*i/3/rays)])
+}
+for(var i = 0; i < height; i++) {
+   var u = (i / (height - 1))*2 -1;
+  for(var j = 0; j < width; j++) {
+    var v = (j / (width - 1))*2 - 1;
+    for(var k = 0; k < rays; k++) {
+      var dp=(exp[k][0]*v+exp[k][1]*u)*mag;
+	    arrx[i][j]+=Math.cos(dp);
+	    arry[i][j]+=Math.sin(dp);
+    }
+  }
+}
+for (var i = 0; i < height; i++) {
+  for (var j = 0; j < width; j++) {
+    for (var k = 0; k < 3; k++) {
+	    arrc[i][j][k]=arrx[i][j]*col[k][0]+arry[i][j]*col[k][1];
+	    arrz[i][j]+=arrc[i][j][k]*arrc[i][j][k];
+    }
+
+    arrz[i][j]=Math.sqrt(arrz[i][j]/1.5);
+  }
+}
+var img = ctx.createImageData(width, height);
+for(var y = 0; y < height; y++) {
+  for(var x = 0; x < width; x++) {
+    for(var k = 0; k < 3; k++) {
+      var val = Math.abs(flag*Math.floor(1+arrc[y][x][2-k]*255*arrz[y][x]/2) & 0xff);
+      img.data[(y*width + x)*4 + k] = val;
+    }
+    img.data[(y*width + x)*4 + 3] = 255;
+  }
+}
+ctx.putImageData(img, 0, 0);
+flag = -Math.random();
+}
+function loop() {
+  go(document.getElementById("c1"), Math.floor(6*Math.random())+4);
+  go(document.getElementById("c2"), Math.floor(6*Math.random())+4);
+  window.requestAnimationFrame(loop);
+};
+</script>
 </body>
 </html>
